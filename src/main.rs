@@ -1,6 +1,8 @@
+use atty;
 use ccometixline::cli::Cli;
 use ccometixline::config::{Config, InputData};
 use ccometixline::core::{collect_all_segments, StatusLineGenerator};
+use ccometixline::ui::run_intro;
 use std::io;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -56,26 +58,29 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
 
-    // Load configuration
-    let mut config = Config::load().unwrap_or_else(|_| Config::default());
+    if atty::is(atty::Stream::Stdin) {
+        run_intro()
+    } else {
+        // Load configuration
+        let mut config = Config::load().unwrap_or_else(|_| Config::default());
 
-    // Apply theme override if provided
-    if let Some(theme) = cli.theme {
-        config = ccometixline::ui::themes::ThemePresets::get_theme(&theme);
+        // Apply theme override if provided
+        if let Some(theme) = cli.theme {
+            config = ccometixline::ui::themes::ThemePresets::get_theme(&theme);
+        }
+
+        // Read Claude Code data from stdin
+        let stdin = io::stdin();
+        let input: InputData = serde_json::from_reader(stdin.lock())?;
+
+        // Collect segment data
+        let segments_data = collect_all_segments(&config, &input);
+
+        // Render statusline
+        let generator = StatusLineGenerator::new(config);
+        let statusline = generator.generate(segments_data);
+
+        println!("{}", statusline);
+        Ok(())
     }
-
-    // Read Claude Code data from stdin
-    let stdin = io::stdin();
-    let input: InputData = serde_json::from_reader(stdin.lock())?;
-
-    // Collect segment data
-    let segments_data = collect_all_segments(&config, &input);
-
-    // Render statusline
-    let generator = StatusLineGenerator::new(config);
-    let statusline = generator.generate(segments_data);
-
-    println!("{}", statusline);
-
-    Ok(())
 }

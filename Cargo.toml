@@ -30,6 +30,7 @@ ureq = { version = "2.10", features = ["json"], optional = true }
 semver = { version = "1.0", optional = true }
 chrono = { version = "0.4", features = ["serde"], optional = true }
 dirs = { version = "5.0", optional = true }
+atty = "0.2.14"
 
 [features]
 default = ["tui", "self-update"]
