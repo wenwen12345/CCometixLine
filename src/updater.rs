@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use clap::crate_version;
 
 #[cfg(feature = "self-update")]
 use chrono::{DateTime, Utc};
@@ -89,13 +90,13 @@ impl UpdateState {
                     state
                 } else {
                     UpdateState {
-                        current_version: env!("CARGO_PKG_VERSION").to_string(),
+                        current_version: crate_version!().to_string(),
                         ..Default::default()
                     }
                 }
             } else {
                 UpdateState {
-                    current_version: env!("CARGO_PKG_VERSION").to_string(),
+                    current_version: crate_version!().to_string(),
                     ..Default::default()
                 }
             };
@@ -152,7 +153,7 @@ impl UpdateState {
 
         #[cfg(not(feature = "self-update"))]
         UpdateState {
-            current_version: env!("CARGO_PKG_VERSION").to_string(),
+            current_version: crate_version!().to_string(),
             ..Default::default()
         }
     }
@@ -355,14 +356,14 @@ pub mod github {
         let response = ureq::get(url)
             .set(
                 "User-Agent",
-                &format!("CCometixLine/{}", env!("CARGO_PKG_VERSION")),
+                &format!("CCometixLine/{}", crate_version!()),
             )
             .call()?;
 
         if response.status() == 200 {
             let release: GitHubRelease = response.into_json()?;
 
-            let current_version = env!("CARGO_PKG_VERSION");
+            let current_version = crate_version!();
             let latest_version = release.version();
 
             // Compare versions using semver

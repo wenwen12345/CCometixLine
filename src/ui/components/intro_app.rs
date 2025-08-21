@@ -5,6 +5,7 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
     Frame,
 };
+use clap::crate_version;
 
 use super::intro_content::{get_step_content, get_step_title};
 
@@ -86,7 +87,7 @@ impl IntroApp {
     fn render_title(&self, f: &mut Frame, area: ratatui::layout::Rect) {
         let title = Paragraph::new(format!(
             "CCometixLine Intro - v{}",
-            env!("CARGO_PKG_VERSION")
+            crate_version!()
         ))
         .block(Block::default().borders(Borders::ALL))
         .style(Style::default().fg(Color::Cyan))

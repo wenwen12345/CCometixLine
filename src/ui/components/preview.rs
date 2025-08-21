@@ -1,6 +1,7 @@
 use crate::config::{Config, SegmentId};
 use crate::core::segments::SegmentData;
 use crate::core::StatusLineGenerator;
+use clap::crate_version;
 use ratatui::{
     layout::Rect,
     text::{Line, Text},
@@ -137,13 +138,13 @@ impl PreviewComponent {
                     },
                 },
                 SegmentId::Update => SegmentData {
-                    primary: format!("v{}", env!("CARGO_PKG_VERSION")),
+                    primary: format!("v{}", crate_version!()),
                     secondary: "".to_string(),
                     metadata: {
                         let mut map = HashMap::new();
                         map.insert(
                             "current_version".to_string(),
-                            env!("CARGO_PKG_VERSION").to_string(),
+                            crate_version!().to_string(),
                         );
                         map.insert("update_available".to_string(), "false".to_string());
                         map

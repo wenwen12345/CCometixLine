@@ -10,6 +10,7 @@ use crate::ui::components::{
     settings::SettingsComponent,
     theme_selector::ThemeSelectorComponent,
 };
+use clap::crate_version;
 use crossterm::{
     event::{self, Event, KeyCode, KeyEventKind, KeyModifiers},
     execute,
@@ -383,7 +384,7 @@ impl App {
             .split(f.area());
 
         // Title
-        let title_text = format!("CCometixLine Configurator v{}", env!("CARGO_PKG_VERSION"));
+        let title_text = format!("CCometixLine Configurator v{}", crate_version!());
         let title = Paragraph::new(title_text)
             .block(Block::default().borders(Borders::ALL))
             .style(Style::default().fg(Color::Cyan))
