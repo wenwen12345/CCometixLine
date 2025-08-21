@@ -6,6 +6,7 @@ use ratatui::{
     Frame,
 };
 use clap::crate_version;
+use crate::claude_config::ClaudeConfig;
 
 use super::intro_content::{get_step_content, get_step_title};
 
@@ -14,15 +15,20 @@ pub struct IntroApp {
     total_steps: usize,
     should_quit: bool,
     should_continue_to_config: bool,
+    claude_config_exists: bool,
+    show_overwrite_prompt: bool,
 }
 
 impl IntroApp {
     pub fn new() -> Self {
+        let claude_config_exists = ClaudeConfig::has_statusline_config();
         Self {
             current_step: 0,
             total_steps: 3,
             should_quit: false,
             should_continue_to_config: false,
+            claude_config_exists,
+            show_overwrite_prompt: false,
         }
     }
 
@@ -30,8 +36,34 @@ impl IntroApp {
         if self.current_step < self.total_steps - 1 {
             self.current_step += 1;
         } else {
+            // Show overwrite prompt if config exists
+            if self.claude_config_exists {
+                self.show_overwrite_prompt = true;
+            } else {
+                self.configure_and_continue();
+            }
+        }
+    }
+
+    pub fn configure_and_continue(&mut self) {
+        // Configure Claude Code
+        if let Err(_e) = ClaudeConfig::configure_statusline(true) {
+            // Silently handle error in TUI mode
+        }
+        self.should_continue_to_config = true;
+    }
+
+    pub fn handle_overwrite_response(&mut self, overwrite: bool) {
+        if overwrite {
+            self.configure_and_continue();
+        } else {
             self.should_continue_to_config = true;
         }
+        self.show_overwrite_prompt = false;
+    }
+
+    pub fn is_showing_overwrite_prompt(&self) -> bool {
+        self.show_overwrite_prompt
     }
 
     pub fn prev_step(&mut self) {
@@ -55,6 +87,14 @@ impl IntroApp {
     pub fn render(&self, f: &mut Frame) {
         let area = f.area();
 
+        if self.show_overwrite_prompt {
+            self.render_overwrite_prompt(f, area);
+        } else {
+            self.render_normal_view(f, area);
+        }
+    }
+
+    fn render_normal_view(&self, f: &mut Frame, area: ratatui::layout::Rect) {
         // Main content layout
         let layout = Layout::default()
             .direction(Direction::Vertical)
@@ -82,6 +122,61 @@ impl IntroApp {
 
         // Help
         self.render_help(f, bottom_layout[1]);
+    }
+
+    fn render_overwrite_prompt(&self, f: &mut Frame, area: ratatui::layout::Rect) {
+        let layout = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([
+                Constraint::Length(3), // Title
+                Constraint::Min(10),   // Content
+                Constraint::Length(3), // Help
+            ])
+            .split(area);
+
+        // Title
+        self.render_title(f, layout[0]);
+
+        // Overwrite prompt
+        let prompt_text = vec![
+            Line::from(""),
+            Line::from(vec![
+                Span::styled(
+                    "Claude Code statusLine already configured!",
+                    Style::default().fg(Color::Yellow),
+                ),
+            ]),
+            Line::from(""),
+            Line::from("Would you like to overwrite the existing configuration?"),
+            Line::from(""),
+            Line::from(vec![
+                Span::styled("Y", Style::default().fg(Color::Green)),
+                Span::raw(" - Yes, overwrite"),
+            ]),
+            Line::from(vec![
+                Span::styled("N", Style::default().fg(Color::Red)),
+                Span::raw(" - No, skip configuration"),
+            ]),
+        ];
+
+        let prompt_widget = Paragraph::new(prompt_text)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .title(" Configuration Conflict "),
+            )
+            .alignment(Alignment::Center);
+
+        f.render_widget(prompt_widget, layout[1]);
+
+        // Help
+        let help_text = "[Y] Yes  [N] No  [Esc] Skip";
+        let help = Paragraph::new(help_text)
+            .block(Block::default().borders(Borders::TOP))
+            .style(Style::default().fg(Color::Gray))
+            .alignment(Alignment::Center);
+
+        f.render_widget(help, layout[2]);
     }
 
     fn render_title(&self, f: &mut Frame, area: ratatui::layout::Rect) {

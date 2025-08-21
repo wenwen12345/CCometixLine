@@ -49,23 +49,59 @@ pub fn run_intro() -> Result<(), Box<dyn std::error::Error>> {
 
             match key.code {
                 KeyCode::Esc => {
-                    intro_app.skip_intro();
-                    break Ok(());
+                    if intro_app.is_showing_overwrite_prompt() {
+                        intro_app.handle_overwrite_response(false);
+                    } else {
+                        intro_app.skip_intro();
+                        break Ok(());
+                    }
+                }
+                KeyCode::Char('y') | KeyCode::Char('Y') => {
+                    if intro_app.is_showing_overwrite_prompt() {
+                        intro_app.handle_overwrite_response(true);
+                        if intro_app.should_continue() {
+                            // Restore terminal before starting configurator
+                            disable_raw_mode()?;
+                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+                            terminal.show_cursor()?;
+                            
+                            // Run configurator
+                            return App::run();
+                        }
+                    }
+                }
+                KeyCode::Char('n') | KeyCode::Char('N') => {
+                    if intro_app.is_showing_overwrite_prompt() {
+                        intro_app.handle_overwrite_response(false);
+                        if intro_app.should_continue() {
+                            // Restore terminal before starting configurator
+                            disable_raw_mode()?;
+                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+                            terminal.show_cursor()?;
+                            
+                            // Run configurator
+                            return App::run();
+                        }
+                    }
                 }
                 KeyCode::Enter | KeyCode::Right => {
-                    intro_app.next_step();
-                    if intro_app.should_continue() {
-                        // Restore terminal before starting configurator
-                        disable_raw_mode()?;
-                        execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-                        terminal.show_cursor()?;
-                        
-                        // Run configurator
-                        return App::run();
+                    if !intro_app.is_showing_overwrite_prompt() {
+                        intro_app.next_step();
+                        if intro_app.should_continue() {
+                            // Restore terminal before starting configurator
+                            disable_raw_mode()?;
+                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+                            terminal.show_cursor()?;
+                            
+                            // Run configurator
+                            return App::run();
+                        }
                     }
                 }
                 KeyCode::Left => {
-                    intro_app.prev_step();
+                    if !intro_app.is_showing_overwrite_prompt() {
+                        intro_app.prev_step();
+                    }
                 }
                 _ => {}
             }
