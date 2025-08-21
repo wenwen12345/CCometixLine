@@ -7,7 +7,7 @@ pub fn get_step_title(current_step: usize) -> &'static str {
     match current_step {
         0 => " Welcome ",
         1 => " Nerd Font Test ",
-        2 => " Claude Code Configuration ",
+        2 => " Automatic Configuration ",
         _ => " Intro ",
     }
 }
@@ -85,76 +85,41 @@ pub fn get_step_content(current_step: usize) -> Text<'static> {
             Line::from(""),
             Line::from(vec![
                 Span::styled(
-                    "Claude Code Configuration",
+                    "Automatic Claude Code Configuration",
                     Style::default()
                         .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
             ]),
             Line::from(""),
-            Line::from("Add to Claude Code settings.json:"),
+            Line::from("CCometixLine can automatically configure Claude Code for you!"),
+            Line::from(""),
+            Line::from("This will:"),
+            Line::from("• Detect your Claude Code settings file"),
+            Line::from("• Add statusLine configuration automatically"),
+            Line::from("• Set the correct path for ccline"),
+            Line::from("• Handle platform differences (Windows/Linux/macOS)"),
+            Line::from(""),
+            Line::from("If you already have a statusLine configured,"),
+            Line::from("we'll ask before overwriting it."),
             Line::from(""),
             Line::from(vec![
-                Span::styled("Linux/macOS:", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
-            ]),
-            Line::from(vec![
-                Span::styled("{", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(vec![
-                Span::raw("  "),
-                Span::styled("\"statusLine\": {", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(vec![
-                Span::raw("    "),
-                Span::styled("\"type\": \"command\",", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(vec![
-                Span::raw("    "),
-                Span::styled("\"command\": \"~/.claude/ccline/ccline\",", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(vec![
-                Span::raw("    "),
-                Span::styled("\"padding\": 0", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(vec![
-                Span::raw("  "),
-                Span::styled("}", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(vec![
-                Span::styled("}", Style::default().fg(Color::Green)),
+                Span::styled("Would you like to automatically configure Claude Code?", 
+                    Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
             ]),
             Line::from(""),
             Line::from(vec![
-                Span::styled("Windows:", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
+                Span::styled("Y", Style::default().fg(Color::Green).add_modifier(Modifier::BOLD)),
+                Span::raw(" - Yes, configure automatically"),
             ]),
             Line::from(vec![
-                Span::styled("{", Style::default().fg(Color::Green)),
+                Span::styled("N", Style::default().fg(Color::Red).add_modifier(Modifier::BOLD)),
+                Span::raw(" - No, I'll configure manually"),
             ]),
             Line::from(vec![
-                Span::raw("  "),
-                Span::styled("\"statusLine\": {", Style::default().fg(Color::Green)),
+                Span::styled("S", Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
+                Span::raw(" - Skip and start configurator"),
             ]),
-            Line::from(vec![
-                Span::raw("    "),
-                Span::styled("\"type\": \"command\",", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(vec![
-                Span::raw("    "),
-                Span::styled("\"command\": \"%USERPROFILE%\\\\.claude\\\\ccline\\\\ccline.exe\",", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(vec![
-                Span::raw("    "),
-                Span::styled("\"padding\": 0", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(vec![
-                Span::raw("  "),
-                Span::styled("}", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(vec![
-                Span::styled("}", Style::default().fg(Color::Green)),
-            ]),
-            Line::from(""),
-            Line::from("Would you like to start configuring your statusline now?"),
         ]),
 
         _ => Text::from(""),

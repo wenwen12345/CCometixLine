@@ -5,7 +5,6 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
     Frame,
 };
-use clap::crate_version;
 use crate::claude_config::ClaudeConfig;
 
 use super::intro_content::{get_step_content, get_step_title};
@@ -17,6 +16,7 @@ pub struct IntroApp {
     should_continue_to_config: bool,
     claude_config_exists: bool,
     show_overwrite_prompt: bool,
+    awaiting_config_choice: bool,
 }
 
 impl IntroApp {
@@ -29,18 +29,16 @@ impl IntroApp {
             should_continue_to_config: false,
             claude_config_exists,
             show_overwrite_prompt: false,
+            awaiting_config_choice: false,
         }
     }
 
     pub fn next_step(&mut self) {
         if self.current_step < self.total_steps - 1 {
             self.current_step += 1;
-        } else {
-            // Show overwrite prompt if config exists
-            if self.claude_config_exists {
-                self.show_overwrite_prompt = true;
-            } else {
-                self.configure_and_continue();
+            // When reaching the last step, show the config choice
+            if self.current_step == self.total_steps - 1 {
+                self.awaiting_config_choice = true;
             }
         }
     }
@@ -51,6 +49,33 @@ impl IntroApp {
             // Silently handle error in TUI mode
         }
         self.should_continue_to_config = true;
+    }
+
+    pub fn handle_config_choice(&mut self, choice: char) {
+        match choice {
+            'y' | 'Y' => {
+                // Yes - configure automatically
+                if self.claude_config_exists {
+                    self.show_overwrite_prompt = true;
+                } else {
+                    self.configure_and_continue();
+                }
+            }
+            'n' | 'N' => {
+                // No - skip configuration, start configurator
+                self.should_continue_to_config = true;
+            }
+            's' | 'S' => {
+                // Skip - start configurator
+                self.should_continue_to_config = true;
+            }
+            _ => return, // Invalid choice, do nothing
+        }
+        self.awaiting_config_choice = false;
+    }
+
+    pub fn is_awaiting_config_choice(&self) -> bool {
+        self.awaiting_config_choice
     }
 
     pub fn handle_overwrite_response(&mut self, overwrite: bool) {
@@ -69,6 +94,10 @@ impl IntroApp {
     pub fn prev_step(&mut self) {
         if self.current_step > 0 {
             self.current_step -= 1;
+            // Reset awaiting config choice if going back
+            if self.awaiting_config_choice {
+                self.awaiting_config_choice = false;
+            }
         }
     }
 
@@ -182,7 +211,7 @@ impl IntroApp {
     fn render_title(&self, f: &mut Frame, area: ratatui::layout::Rect) {
         let title = Paragraph::new(format!(
             "CCometixLine Intro - v{}",
-            crate_version!()
+            env!("CARGO_PKG_VERSION")
         ))
         .block(Block::default().borders(Borders::ALL))
         .style(Style::default().fg(Color::Cyan))
@@ -238,10 +267,12 @@ impl IntroApp {
     }
 
     fn render_help(&self, f: &mut Frame, area: ratatui::layout::Rect) {
-        let help_text = if self.current_step == 0 {
+        let help_text = if self.awaiting_config_choice {
+            "[Y] Yes  [N] No  [S] Skip  [Esc] Exit"
+        } else if self.current_step == 0 {
             "[→/Enter] Next  [Esc] Skip"
         } else if self.current_step >= self.total_steps - 1 {
-            "[←] Back  [Enter] Start Config  [Esc] Exit"
+            "[←] Back  [Y/N/S] Choose  [Esc] Exit"
         } else {
             "[←] Back  [→/Enter] Next  [Esc] Skip"
         };

@@ -68,6 +68,17 @@ pub fn run_intro() -> Result<(), Box<dyn std::error::Error>> {
                             // Run configurator
                             return App::run();
                         }
+                    } else if intro_app.is_awaiting_config_choice() {
+                        intro_app.handle_config_choice('y');
+                        if intro_app.should_continue() {
+                            // Restore terminal before starting configurator
+                            disable_raw_mode()?;
+                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+                            terminal.show_cursor()?;
+                            
+                            // Run configurator
+                            return App::run();
+                        }
                     }
                 }
                 KeyCode::Char('n') | KeyCode::Char('N') => {
@@ -82,10 +93,35 @@ pub fn run_intro() -> Result<(), Box<dyn std::error::Error>> {
                             // Run configurator
                             return App::run();
                         }
+                    } else if intro_app.is_awaiting_config_choice() {
+                        intro_app.handle_config_choice('n');
+                        if intro_app.should_continue() {
+                            // Restore terminal before starting configurator
+                            disable_raw_mode()?;
+                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+                            terminal.show_cursor()?;
+                            
+                            // Run configurator
+                            return App::run();
+                        }
+                    }
+                }
+                KeyCode::Char('s') | KeyCode::Char('S') => {
+                    if intro_app.is_awaiting_config_choice() {
+                        intro_app.handle_config_choice('s');
+                        if intro_app.should_continue() {
+                            // Restore terminal before starting configurator
+                            disable_raw_mode()?;
+                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+                            terminal.show_cursor()?;
+                            
+                            // Run configurator
+                            return App::run();
+                        }
                     }
                 }
                 KeyCode::Enter | KeyCode::Right => {
-                    if !intro_app.is_showing_overwrite_prompt() {
+                    if !intro_app.is_showing_overwrite_prompt() && !intro_app.is_awaiting_config_choice() {
                         intro_app.next_step();
                         if intro_app.should_continue() {
                             // Restore terminal before starting configurator
