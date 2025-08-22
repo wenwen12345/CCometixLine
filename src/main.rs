@@ -58,8 +58,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
 
+    if cli.intro {
+        return run_intro();
+    }
+
     if atty::is(atty::Stream::Stdin) {
-        run_intro()
+        println!("CCometixLine is running in interactive mode. Use --help for options or -i/--intro to run the intro application.");
+        Ok(())
     } else {
         // Load configuration
         let mut config = Config::load().unwrap_or_else(|_| Config::default());

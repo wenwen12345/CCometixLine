@@ -60,24 +60,12 @@ pub fn run_intro() -> Result<(), Box<dyn std::error::Error>> {
                     if intro_app.is_showing_overwrite_prompt() {
                         intro_app.handle_overwrite_response(true);
                         if intro_app.should_continue() {
-                            // Restore terminal before starting configurator
-                            disable_raw_mode()?;
-                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-                            terminal.show_cursor()?;
-                            
-                            // Run configurator
-                            return App::run();
+                            break Ok(());
                         }
                     } else if intro_app.is_awaiting_config_choice() {
                         intro_app.handle_config_choice('y');
                         if intro_app.should_continue() {
-                            // Restore terminal before starting configurator
-                            disable_raw_mode()?;
-                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-                            terminal.show_cursor()?;
-                            
-                            // Run configurator
-                            return App::run();
+                            break Ok(());
                         }
                     }
                 }
@@ -85,24 +73,12 @@ pub fn run_intro() -> Result<(), Box<dyn std::error::Error>> {
                     if intro_app.is_showing_overwrite_prompt() {
                         intro_app.handle_overwrite_response(false);
                         if intro_app.should_continue() {
-                            // Restore terminal before starting configurator
-                            disable_raw_mode()?;
-                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-                            terminal.show_cursor()?;
-                            
-                            // Run configurator
-                            return App::run();
+                            break Ok(());
                         }
                     } else if intro_app.is_awaiting_config_choice() {
                         intro_app.handle_config_choice('n');
                         if intro_app.should_continue() {
-                            // Restore terminal before starting configurator
-                            disable_raw_mode()?;
-                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-                            terminal.show_cursor()?;
-                            
-                            // Run configurator
-                            return App::run();
+                            break Ok(());
                         }
                     }
                 }
@@ -110,13 +86,7 @@ pub fn run_intro() -> Result<(), Box<dyn std::error::Error>> {
                     if intro_app.is_awaiting_config_choice() {
                         intro_app.handle_config_choice('s');
                         if intro_app.should_continue() {
-                            // Restore terminal before starting configurator
-                            disable_raw_mode()?;
-                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-                            terminal.show_cursor()?;
-                            
-                            // Run configurator
-                            return App::run();
+                            break Ok(());
                         }
                     }
                 }
@@ -124,13 +94,7 @@ pub fn run_intro() -> Result<(), Box<dyn std::error::Error>> {
                     if !intro_app.is_showing_overwrite_prompt() && !intro_app.is_awaiting_config_choice() {
                         intro_app.next_step();
                         if intro_app.should_continue() {
-                            // Restore terminal before starting configurator
-                            disable_raw_mode()?;
-                            execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-                            terminal.show_cursor()?;
-                            
-                            // Run configurator
-                            return App::run();
+                            break Ok(());
                         }
                     }
                 }
