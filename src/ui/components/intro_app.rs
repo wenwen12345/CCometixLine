@@ -19,6 +19,12 @@ pub struct IntroApp {
     awaiting_config_choice: bool,
 }
 
+impl Default for IntroApp {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl IntroApp {
     pub fn new() -> Self {
         let claude_config_exists = ClaudeConfig::has_statusline_config();

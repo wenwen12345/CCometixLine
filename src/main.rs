@@ -1,4 +1,3 @@
-use atty;
 use ccometixline::cli::Cli;
 use ccometixline::config::{Config, InputData};
 use ccometixline::core::{collect_all_segments, StatusLineGenerator};

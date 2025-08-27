@@ -64,12 +64,11 @@ impl ClaudeConfig {
     /// Configure Claude Code statusLine
     pub fn configure_statusline(force: bool) -> Result<(), Box<dyn std::error::Error>> {
         // Check if already configured and prompt if needed
-        if !force && Self::has_statusline_config() {
-            if !Self::prompt_overwrite()? {
+        if !force && Self::has_statusline_config()
+            && !Self::prompt_overwrite()? {
                 println!("Configuration cancelled.");
                 return Ok(());
             }
-        }
 
         let settings_path =
             Self::get_settings_path().ok_or("Could not determine Claude Code settings path")?;
