@@ -33,6 +33,6 @@ dirs = "5.0"
 atty = "0.2.14"
 
 [features]
-default = ["tui", "self-update", "dirs"]
+default = ["tui", "self-update"]
 tui = ["ratatui", "crossterm", "ansi_term", "ansi-to-tui", "chrono"]
 self-update = ["ureq", "semver", "chrono"]
