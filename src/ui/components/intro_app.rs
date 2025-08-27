@@ -1,3 +1,4 @@
+use crate::claude_config::ClaudeConfig;
 use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout},
     style::{Color, Style},
@@ -5,7 +6,6 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
     Frame,
 };
-use crate::claude_config::ClaudeConfig;
 
 use super::intro_content::{get_step_content, get_step_title};
 
@@ -169,12 +169,10 @@ impl IntroApp {
         // Overwrite prompt
         let prompt_text = vec![
             Line::from(""),
-            Line::from(vec![
-                Span::styled(
-                    "Claude Code statusLine already configured!",
-                    Style::default().fg(Color::Yellow),
-                ),
-            ]),
+            Line::from(vec![Span::styled(
+                "Claude Code statusLine already configured!",
+                Style::default().fg(Color::Yellow),
+            )]),
             Line::from(""),
             Line::from("Would you like to overwrite the existing configuration?"),
             Line::from(""),

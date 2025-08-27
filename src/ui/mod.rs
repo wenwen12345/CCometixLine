@@ -5,9 +5,9 @@ pub mod components;
 #[cfg(feature = "tui")]
 pub mod events;
 #[cfg(feature = "tui")]
-pub mod layout;
-#[cfg(feature = "tui")]
 pub mod intro;
+#[cfg(feature = "tui")]
+pub mod layout;
 
 pub mod themes;
 
@@ -91,7 +91,9 @@ pub fn run_intro() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
                 KeyCode::Enter | KeyCode::Right => {
-                    if !intro_app.is_showing_overwrite_prompt() && !intro_app.is_awaiting_config_choice() {
+                    if !intro_app.is_showing_overwrite_prompt()
+                        && !intro_app.is_awaiting_config_choice()
+                    {
                         intro_app.next_step();
                         if intro_app.should_continue() {
                             break Ok(());

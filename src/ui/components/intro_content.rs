@@ -84,14 +84,12 @@ pub fn get_step_content(current_step: usize) -> Text<'static> {
 
         2 => Text::from(vec![
             Line::from(""),
-            Line::from(vec![
-                Span::styled(
-                    "Automatic Claude Code Configuration",
-                    Style::default()
-                        .fg(Color::Cyan)
-                        .add_modifier(Modifier::BOLD),
-                ),
-            ]),
+            Line::from(vec![Span::styled(
+                "Automatic Claude Code Configuration",
+                Style::default()
+                    .fg(Color::Cyan)
+                    .add_modifier(Modifier::BOLD),
+            )]),
             Line::from(""),
             Line::from("CCometixLine can automatically configure Claude Code for you!"),
             Line::from(""),
@@ -104,21 +102,36 @@ pub fn get_step_content(current_step: usize) -> Text<'static> {
             Line::from("If you already have a statusLine configured,"),
             Line::from("we'll ask before overwriting it."),
             Line::from(""),
-            Line::from(vec![
-                Span::styled("Would you like to automatically configure Claude Code?", 
-                    Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
-            ]),
+            Line::from(vec![Span::styled(
+                "Would you like to automatically configure Claude Code?",
+                Style::default()
+                    .fg(Color::Yellow)
+                    .add_modifier(Modifier::BOLD),
+            )]),
             Line::from(""),
             Line::from(vec![
-                Span::styled("Y", Style::default().fg(Color::Green).add_modifier(Modifier::BOLD)),
+                Span::styled(
+                    "Y",
+                    Style::default()
+                        .fg(Color::Green)
+                        .add_modifier(Modifier::BOLD),
+                ),
                 Span::raw(" - Yes, configure automatically"),
             ]),
             Line::from(vec![
-                Span::styled("N", Style::default().fg(Color::Red).add_modifier(Modifier::BOLD)),
+                Span::styled(
+                    "N",
+                    Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+                ),
                 Span::raw(" - No, I'll configure manually"),
             ]),
             Line::from(vec![
-                Span::styled("S", Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
+                Span::styled(
+                    "S",
+                    Style::default()
+                        .fg(Color::Cyan)
+                        .add_modifier(Modifier::BOLD),
+                ),
                 Span::raw(" - Skip and start configurator"),
             ]),
         ]),

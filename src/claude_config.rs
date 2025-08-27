@@ -1,7 +1,7 @@
+use serde_json::{json, Value};
 use std::fs;
 use std::io::{self, Write};
 use std::path::PathBuf;
-use serde_json::{json, Value};
 
 pub struct ClaudeConfig;
 
@@ -9,13 +9,17 @@ impl ClaudeConfig {
     /// Get Claude Code settings.json path
     pub fn get_settings_path() -> Option<PathBuf> {
         let home = dirs::home_dir()?;
-        
+
         #[cfg(target_os = "windows")]
-        let settings_path = home.join("AppData").join("Roaming").join("Claude").join("settings.json");
-        
+        let settings_path = home
+            .join("AppData")
+            .join("Roaming")
+            .join("Claude")
+            .join("settings.json");
+
         #[cfg(not(target_os = "windows"))]
         let settings_path = home.join(".config").join("claude").join("settings.json");
-        
+
         Some(settings_path)
     }
 
@@ -36,13 +40,13 @@ impl ClaudeConfig {
     /// Get the appropriate ccline command path
     fn get_ccline_command() -> String {
         let home = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
-        
+
         #[cfg(target_os = "windows")]
         let command = format!("%USERPROFILE%\\.claude\\ccline\\ccline.exe");
-        
+
         #[cfg(not(target_os = "windows"))]
         let command = format!("{}/.claude/ccline/ccline", home.display());
-        
+
         command
     }
 
@@ -50,10 +54,10 @@ impl ClaudeConfig {
     pub fn prompt_overwrite() -> io::Result<bool> {
         print!("Claude Code statusLine is already configured. Overwrite? (y/N): ");
         io::stdout().flush()?;
-        
+
         let mut input = String::new();
         io::stdin().read_line(&mut input)?;
-        
+
         Ok(input.trim().to_lowercase() == "y" || input.trim().to_lowercase() == "yes")
     }
 
@@ -67,8 +71,8 @@ impl ClaudeConfig {
             }
         }
 
-        let settings_path = Self::get_settings_path()
-            .ok_or("Could not determine Claude Code settings path")?;
+        let settings_path =
+            Self::get_settings_path().ok_or("Could not determine Claude Code settings path")?;
 
         // Create parent directory if it doesn't exist
         if let Some(parent) = settings_path.parent() {
