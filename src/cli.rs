@@ -31,6 +31,10 @@ pub struct Cli {
     /// Run intro application
     #[arg(short = 'i', long = "intro")]
     pub intro: bool,
+
+    /// Patch Claude Code cli.js to disable context warnings
+    #[arg(long = "patch")]
+    pub patch: Option<String>,
 }
 
 impl Cli {
